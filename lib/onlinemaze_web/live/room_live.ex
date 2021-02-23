@@ -1,7 +1,7 @@
 defmodule OnlinemazeWeb.RoomLive do
   use OnlinemazeWeb, :live_view
 
-  alias Onlinemaze.Usecases.{Character, Game}
+  alias Onlinemaze.Usecases.Character
 
   @impl true
   def mount(_params, %{"room_name" => name} = _session, socket) do
@@ -59,7 +59,6 @@ defmodule OnlinemazeWeb.RoomLive do
     end
   end
 
-  @impl true
   def update(socket = %{assigns: %{room_atom: room_atom}}) do
     socket
     |> assign(:characters, Character.list_state(room_atom))
