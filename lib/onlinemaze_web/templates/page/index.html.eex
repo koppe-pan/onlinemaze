@@ -1,0 +1,14 @@
+<div>
+  <%= form_tag("/new", method: :post) %>
+  <label>新規</label>
+  <input type="text" name="room_name" placeholder="id" required>
+  <button type="submit">ルームを作る</button>
+  </form>
+</div>
+<div>
+  <%= form_tag("/play", method: :post) %>
+  <label>ルーム名を入力して始める</label>
+  <input type="text" name="room_name" placeholder="ルーム名" required>
+  <button type="submit">ルームに入る</button>
+  </form>
+</div>

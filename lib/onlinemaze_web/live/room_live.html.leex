@@ -1,0 +1,23 @@
+<p>ルーム名：<%= @room_name %></p>
+<%= if is_nil(@me) do %>
+<div>
+  <p>登録してください</p>
+  <input type="text" name="name" placeholder="名前" phx-change="check-name"/>
+  <button phx-hook="Prepare">登録</button>
+</div>
+<% else %>
+  <form phx-submit="start-coop">
+    <input type="hidden" name="name" value="<%= @me %>"/>
+    <button><%= @me %>で協力ゲームを始める</button>
+  </form>
+  <form phx-submit="start-game">
+    <input type="hidden" name="name" value="<%= @me %>"/>
+    <button><%= @me %>で対戦ゲームを始める</button>
+  </form>
+<% end %>
+<div>
+  <h1>参加者一覧</h1>
+  <%= for c <- @characters do %>
+    <p><%= c.name %></p>
+  <% end %>
+</div>
