@@ -3,8 +3,10 @@
   <svg>
     <g transform='translate(<%= @width %>, <%= @height %>)' >
       <circle cx="<%= @me.x %>" cy="<%= @me.y %>" r="3" stroke="black" stroke-width="1" fill="magenta"></circle>
+      <text x="<%= @me.x %>" y="<%= (@me.y) -10 %>"><%= @name %></text>
       <%= for other <- @others do %>
         <circle cx="<%= other.x %>" cy="<%= other.y %>" r="3" stroke="black" stroke-width="1" fill="green"></circle>
+        <text x="<%= other.x %>" y="<%= (other.y) -10 %>"><%= other.name %></text>
       <% end %>
     </g>
   </svg>

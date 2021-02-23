@@ -13,6 +13,7 @@ defmodule OnlinemazeWeb.GameLive do
      |> assign(room_atom: String.to_atom(room_name))
      |> assign(me_atom: me_atom)
      |> assign(me: %{x: 0, y: 0})
+     |> assign(name: me)
      |> assign(others: [])
      |> assign(time: 0)
      |> assign(width: 320)
@@ -47,7 +48,7 @@ defmodule OnlinemazeWeb.GameLive do
 
   def update_others(socket = %{assigns: %{room_atom: room_atom, me_atom: me_atom}}) do
     socket
-    |> assign(others: Character.others_positions(room_atom, me_atom))
+    |> assign(others: Character.others_name_and_positions(room_atom, me_atom))
   end
 
   def update(socket) do

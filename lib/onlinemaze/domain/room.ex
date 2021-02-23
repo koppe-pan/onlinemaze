@@ -36,8 +36,6 @@ defmodule Onlinemaze.Domain.Room do
 
   @impl true
   def handle_cast({:move_with, %{x: vx, y: vy}}, room = %{x: x, y: y}) do
-    IO.puts(vx)
-
     {:noreply,
      room
      |> Map.replace!(:x, x + vx)

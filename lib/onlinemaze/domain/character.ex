@@ -31,7 +31,6 @@ defmodule Onlinemaze.Domain.Character do
   def handle_cast({:move_to, %{x: x, y: y}}, character = %{ox: ox, oy: oy, x: bef_x, y: bef_y}) do
     dx = trunc(@speed * x - ox)
     dy = trunc(@speed * y - oy)
-    IO.puts(:erlang.integer_to_binary(dx))
 
     {:noreply,
      character
@@ -39,6 +38,10 @@ defmodule Onlinemaze.Domain.Character do
      |> Map.replace!(:y, dy)
      |> Map.replace!(:vx, dx - bef_x)
      |> Map.replace!(:vy, dy - bef_y)}
+  end
+
+  def handle_call(:name_and_position, _, character = %{x: x, y: y, name: name}) do
+    {:reply, %{x: x, y: y, name: name}, character}
   end
 
   def handle_call(:position, _, character = %{x: x, y: y}) do
