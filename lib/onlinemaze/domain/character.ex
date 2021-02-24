@@ -4,7 +4,7 @@ defmodule Onlinemaze.Domain.Character do
   defstruct id: nil, ox: 0, oy: 0, vx: 0, vy: 0, x: 0, y: 0, name: nil
 
   @index 6
-  @speed :math.pow(10, @index) |> round
+  @speed (:math.pow(10, @index) * 2) |> round
 
   @doc """
   Receive CharacterSupervisor
