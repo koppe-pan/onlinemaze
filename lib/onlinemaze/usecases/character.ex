@@ -53,6 +53,10 @@ defmodule Onlinemaze.Usecases.Character do
     GenServer.call(me_atom, :position)
   end
 
+  def ghost_position(me_atom) do
+    GenServer.call(me_atom, :ghost_position)
+  end
+
   def me_velocity(me_atom) do
     GenServer.call(me_atom, :velocity)
   end
