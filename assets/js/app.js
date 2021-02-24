@@ -17,6 +17,17 @@ import {Socket} from "phoenix"
 import NProgress from "nprogress"
 import {LiveSocket} from "phoenix_live_view"
 
+/***** 位置情報が取得できない場合 *****/
+function errorCallback(error) {
+  console.log(error)
+}
+
+const options = {
+  enableHighAccuracy: true, //GPS機能を利用
+  timeout: 5000, //取得タイムアウトまでの時間（ミリ秒）
+  maximumAge: 0 //常に新しい情報に更新
+};
+
 let Hooks = {}
 Hooks.Prepare = {
   mounted(){
@@ -27,17 +38,16 @@ Hooks.Prepare = {
       var successCallback = (position) => {
         this.pushEvent("set-location", {loc: {x: position.coords.latitude, y: position.coords.longitude}, name: name});
       }
-
-      /***** 位置情報が取得できない場合 *****/
-      function errorCallback(error) {
-        console.log(error)
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
+    })
+  }
+}
+Hooks.SetPosition = {
+  mounted(){
+    this.el.addEventListener('click', () => {
+      var successCallback = (position) => {
+        this.pushEvent("set-location", {loc: {x: position.coords.latitude, y: position.coords.longitude}});
       }
-
-      var options = {
-        enableHighAccuracy: true, //GPS機能を利用
-        timeout: 5000, //取得タイムアウトまでの時間（ミリ秒）
-        maximumAge: 0 //常に新しい情報に更新
-      };
       navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
     })
   }
@@ -51,17 +61,6 @@ Hooks.Can = {
     var successCallback = (position) => {
       this.pushEvent("put-location", {loc: {x: position.coords.latitude, y: position.coords.longitude}});
     }
-
-    /***** 位置情報が取得できない場合 *****/
-    function errorCallback(error) {
-      console.log(error)
-    }
-
-    var options = {
-      enableHighAccuracy: true, //GPS機能を利用
-      timeout: 5000, //取得タイムアウトまでの時間（ミリ秒）
-      maximumAge: 0 //常に新しい情報に更新
-    };
     navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
   }
 }

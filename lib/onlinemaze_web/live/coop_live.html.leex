@@ -6,18 +6,60 @@
     </g>
   </svg>
 </div>
+<div id="to-room">
+  <%= form_tag("/redirect_to_room", method: :get) %>
+    <input type="hidden" name="me" value="<%= @name %>">
+    <input type="hidden" name="room_name" value="<%= @room_name %>">
+    <button type="submit">選択画面に戻る</button>
+  </form>
+</div>
+<div id="to-coop">
+  <%= form_tag("/redirect_to_coop", method: :get) %>
+    <input type="hidden" name="me" value="<%= @name %>">
+    <input type="hidden" name="room_name" value="<%= @room_name %>">
+    <button type="submit"><%= @name %>で協力ゲームを開始する</button>
+  </form>
+</div>
+<div id="to-game">
+  <%= form_tag("/redirect_to_game", method: :get) %>
+    <input type="hidden" name="me" value="<%= @name %>">
+    <input type="hidden" name="room_name" value="<%= @room_name %>">
+    <button type="submit"><%= @name %>で対戦ゲームを開始する</button>
+  </form>
+</div>
 <style>
-	#canvas-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-	#canvas-container svg {
-		display: block;
-		width: 100%;
-		height: 100%;
-    background-color: white;
-  }
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#canvas-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+#to-room {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-coop {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-game {
+  position: fixed;
+  top: 10%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
 </style>

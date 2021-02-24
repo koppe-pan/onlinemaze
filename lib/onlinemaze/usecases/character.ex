@@ -27,6 +27,10 @@ defmodule Onlinemaze.Usecases.Character do
     :sys.get_state(pid)
   end
 
+  def set_home_position(me_atom, attrs) do
+    GenServer.cast(me_atom, {:set_home_position, attrs})
+  end
+
   def move_to(me_atom, attrs) do
     GenServer.cast(me_atom, {:move_to, attrs})
   end

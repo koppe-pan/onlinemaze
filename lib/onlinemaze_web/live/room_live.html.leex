@@ -6,14 +6,29 @@
   <button phx-hook="Prepare">登録</button>
 </div>
 <% else %>
-  <form phx-submit="start-coop">
-    <input type="hidden" name="name" value="<%= @me %>"/>
-    <button><%= @me %>で協力ゲームを始める</button>
-  </form>
-  <form phx-submit="start-game">
-    <input type="hidden" name="name" value="<%= @me %>"/>
-    <button><%= @me %>で対戦ゲームを始める</button>
-  </form>
+  <div id="to-room">
+    <%= form_tag("/redirect_to_room", method: :get) %>
+      <input type="hidden" name="me" value="<%= @me %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit">選択画面に戻る</button>
+    </form>
+  </div>
+  <div id="to-coop">
+    <%= form_tag("/redirect_to_coop", method: :get) %>
+      <input type="hidden" name="me" value="<%= @me %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit"><%= @me %>で協力ゲームを開始する</button>
+    </form>
+  </div>
+  <div id="to-game">
+    <%= form_tag("/redirect_to_game", method: :get) %>
+      <input type="hidden" name="me" value="<%= @me %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit"><%= @me %>で対戦ゲームを開始する</button>
+    </form>
+  </div>
+  <p>左側のメニューから遊びたいゲームを選択してください</p>
+  <button phx-hook="SetPosition">現在地をリセット</button>
 <% end %>
 <div>
   <h1>参加者一覧</h1>
@@ -21,3 +36,39 @@
     <p><%= c.name %></p>
   <% end %>
 </div>
+<style>
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#canvas-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+#to-room {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-coop {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-game {
+  position: fixed;
+  top: 10%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+</style>

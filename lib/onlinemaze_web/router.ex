@@ -20,6 +20,7 @@ defmodule OnlinemazeWeb.Router do
     get "/", PageController, :index
     post "/new", PageController, :new
     post "/play", PageController, :play
+    get "/redirect_to_room", PageController, :redirect_to_room
     get "/redirect_to_coop", PageController, :redirect_to_coop
     get "/redirect_to_game", PageController, :redirect_to_game
     live "/room", RoomLive, :index

@@ -28,6 +28,13 @@ defmodule Onlinemaze.Domain.Character do
     String.to_atom(room_name <> name)
   end
 
+  def handle_cast({:set_home_position, %{x: x, y: y}}, character) do
+    {:noreply,
+     character
+     |> Map.replace!(:ox, x)
+     |> Map.replace!(:oy, y)}
+  end
+
   def handle_cast({:move_to, %{x: x, y: y}}, character = %{ox: ox, oy: oy, x: bef_x, y: bef_y}) do
     dx = trunc(@speed * x - ox)
     dy = trunc(@speed * y - oy)

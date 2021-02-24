@@ -14,6 +14,7 @@ defmodule OnlinemazeWeb.CoopLive do
      |> assign(me_atom: me_atom)
      |> assign(character: %{x: 0, y: 0})
      |> assign(time: 0)
+     |> assign(name: me)
      |> assign(width: 320)
      |> assign(height: 320)
      |> schedule_tick()}
