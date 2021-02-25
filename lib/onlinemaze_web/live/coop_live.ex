@@ -13,10 +13,15 @@ defmodule OnlinemazeWeb.CoopLive do
      |> assign(room_atom: String.to_atom(room_name))
      |> assign(me_atom: me_atom)
      |> assign(character: %{x: 0, y: 0})
+     |> assign(ghost: nil)
      |> assign(time: 0)
      |> assign(name: me)
      |> assign(width: 320)
      |> assign(height: 320)
+     |> assign(mousestart: nil)
+     |> assign(mouseend: nil)
+     |> assign(wall_atom: String.to_atom("wall" <> room_name))
+     |> assign(walls: [])
      |> schedule_tick()}
   end
 
@@ -35,6 +40,51 @@ defmodule OnlinemazeWeb.CoopLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event(
+        "touchstart",
+        %{"x" => x, "y" => y},
+        socket
+      ) do
+    {:noreply,
+     socket
+     |> assign(mousestart: %{x: x, y: y})
+     |> assign(mouseend: %{x: x, y: y})}
+  end
+
+  @impl true
+  def handle_event(
+        "touchmove",
+        %{"x" => x, "y" => y},
+        socket
+      ) do
+    {:noreply,
+     socket
+     |> assign(mouseend: %{x: x, y: y})}
+  end
+
+  @impl true
+  def handle_event(
+        "touchend",
+        _,
+        socket = %{
+          assigns: %{
+            wall_atom: wall_atom,
+            mousestart: %{x: sx, y: sy},
+            mouseend: %{x: ex, y: ey},
+            width: w,
+            height: h
+          }
+        }
+      ) do
+    Game.add_wall(wall_atom, {%{x: sx - w, y: sy - h}, %{x: ex - w, y: ey - h}})
+
+    {:noreply,
+     socket
+     |> assign(mousestart: nil)
+     |> assign(mouseend: nil)}
+  end
+
   def update_time(socket = %{assigns: %{time: time}}) do
     socket
     |> assign(time: time + 1)
@@ -45,12 +95,19 @@ defmodule OnlinemazeWeb.CoopLive do
 
     socket
     |> assign(character: Game.position(room_atom))
+    |> assign(ghost: Character.ghost_position(me_atom))
+  end
+
+  def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do
+    socket
+    |> assign(walls: Game.list_walls(wall_atom))
   end
 
   def update(socket) do
     socket
     |> update_time()
     |> update_xy()
+    |> update_walls()
   end
 
   @impl true

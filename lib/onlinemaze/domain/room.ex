@@ -1,11 +1,11 @@
 defmodule Onlinemaze.Domain.Room do
   use GenServer
-  alias Onlinemaze.Domain.Character
+  alias Onlinemaze.Domain.{Calc, Character}
 
   defstruct id: nil,
             characters: [],
-            x: 0,
-            y: 0
+            coop: %{x: 0, y: 0},
+            ghost: nil
 
   def start_link(id) do
     with {:ok, pid} <- GenServer.start_link(__MODULE__, id) do
@@ -35,16 +35,28 @@ defmodule Onlinemaze.Domain.Room do
   end
 
   @impl true
-  def handle_cast({:move_with, %{x: vx, y: vy}}, room = %{x: x, y: y}) do
-    {:noreply,
-     room
-     |> Map.replace!(:x, x + vx)
-     |> Map.replace!(:y, y + vy)}
+  def handle_cast({:move_with, %{x: vx, y: vy}}, room = %{id: id, coop: coop}) do
+    to = %{x: coop.x + vx, y: coop.y + vy}
+
+    if(to.x == coop.x and to.y == coop.y) do
+      {:noreply, room}
+    else
+      movement = {coop, to}
+
+      if Calc.crossing_wall?(id, movement) do
+        {:noreply, room |> Map.replace!(:ghost, to)}
+      else
+        {:noreply,
+         room
+         |> Map.replace!(:ghost, nil)
+         |> Map.replace!(:coop, to)}
+      end
+    end
   end
 
   @impl true
-  def handle_call(:position, _, room = %{x: x, y: y}) do
-    {:reply, %{x: x, y: y}, room}
+  def handle_call(:position, _, room = %{coop: coop}) do
+    {:reply, coop, room}
   end
 
   @impl true
