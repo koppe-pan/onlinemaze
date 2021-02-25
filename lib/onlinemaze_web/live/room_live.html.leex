@@ -27,6 +27,13 @@
       <button type="submit"><%= @me %>で対戦ゲームを開始する</button>
     </form>
   </div>
+  <div id="to-treasure">
+    <%= form_tag("/redirect_to_treasure", method: :get) %>
+      <input type="hidden" name="me" value="<%= @me %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit"><%= @me %>でスイカモードを開始する</button>
+    </form>
+  </div>
   <p>左側のメニューから遊びたいゲームを選択してください</p>
   <button phx-hook="SetPosition">現在地をリセット</button>
 <% end %>
@@ -67,6 +74,13 @@
 #to-game {
   position: fixed;
   top: 10%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-treasure {
+  position: fixed;
+  top: 15%;
   left: 0;
   width: 30%;
   height: 10%;

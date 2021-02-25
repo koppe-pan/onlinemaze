@@ -23,9 +23,11 @@ defmodule OnlinemazeWeb.Router do
     get "/redirect_to_room", PageController, :redirect_to_room
     get "/redirect_to_coop", PageController, :redirect_to_coop
     get "/redirect_to_game", PageController, :redirect_to_game
+    get "/redirect_to_treasure", PageController, :redirect_to_treasure
     live "/room", RoomLive, :index
     live "/coop", CoopLive, :index
     live "/game", GameLive, :index
+    live "/treasure", TreasureLive, :index
   end
 
   # Other scopes may use custom stacks.

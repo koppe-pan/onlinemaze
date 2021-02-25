@@ -79,6 +79,7 @@ Hooks.Can = {
 }
 Hooks.Canvas = {
   mounted(){
+    this.pushEvent("set-window", {win: {x: window.innerWidth, y: window.innerHeight}});
     this.el.addEventListener(TOUCHSTART, e => {
       this.pushEvent("touchstart", {x: Math.round(e.clientX-this.el.getBoundingClientRect().left), y: Math.round(e.clientY-this.el.getBoundingClientRect().top)})
     });

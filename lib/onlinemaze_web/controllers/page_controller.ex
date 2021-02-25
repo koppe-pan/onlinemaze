@@ -14,7 +14,7 @@ defmodule OnlinemazeWeb.PageController do
       |> render("index.html")
     else
       case Game.create_game(name) do
-        {:ok, pid} ->
+        {:ok, _} ->
           conn
           |> live_render(OnlinemazeWeb.RoomLive,
             session: %{"room_name" => name}
@@ -71,6 +71,19 @@ defmodule OnlinemazeWeb.PageController do
     if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
       conn
       |> live_render(OnlinemazeWeb.GameLive,
+        session: %{"me" => me, "room_name" => room_name}
+      )
+    else
+      conn
+      |> put_flash("error", "存在しないルーム名またはキャラクター名です。")
+      |> render("index.html")
+    end
+  end
+
+  def redirect_to_treasure(conn, %{"me" => me, "room_name" => room_name}) do
+    if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
+      conn
+      |> live_render(OnlinemazeWeb.TreasureLive,
         session: %{"me" => me, "room_name" => room_name}
       )
     else
