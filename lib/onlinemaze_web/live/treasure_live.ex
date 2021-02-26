@@ -84,7 +84,7 @@ defmodule OnlinemazeWeb.TreasureLive do
 
   def update_others(socket = %{assigns: %{room_atom: room_atom, me_atom: me_atom}}) do
     socket
-    |> assign(others: Character.others_name_and_positions(room_atom, me_atom, "game"))
+    |> assign(others: Character.others_name_and_positions_and_ghosts(room_atom, me_atom, "game"))
   end
 
   def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do

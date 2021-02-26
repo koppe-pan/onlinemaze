@@ -108,10 +108,14 @@ defmodule OnlinemazeWeb.GameLive do
     |> assign(walls: Game.list_walls(wall_atom))
   end
 
-  def check_finish(socket = %{assigns: %{room_name: room_name}}) do
-    if Game.check_treasure_clear(room_name),
-      do: socket |> put_flash(:info, "ゲームクリア"),
-      else: socket |> put_flash(:info, "壁をもとに宝を探せ")
+  def check_finish(socket = %{assigns: %{room_name: room_name, me_atom: me_atom}}) do
+    if Game.check_treasure_clear(room_name) do
+      socket |> put_flash(:info, "ゲームクリア")
+    else
+      if Game.check_treasure_clear(room_name, me_atom),
+        do: socket |> put_flash(:info, "発見しました！"),
+        else: socket |> put_flash(:info, "壁をもとに宝を探せ")
+    end
   end
 
   def update(socket) do

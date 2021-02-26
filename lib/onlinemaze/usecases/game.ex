@@ -31,6 +31,13 @@ defmodule Onlinemaze.Usecases.Game do
     end)
   end
 
+  def check_treasure_clear(room_name, me_atom) do
+    Treasure.find_treasure?(
+      Character.me_position(me_atom),
+      treasure_position(Treasure.generate_id(room_name))
+    )
+  end
+
   def state(pid) do
     :sys.get_state(pid)
   end

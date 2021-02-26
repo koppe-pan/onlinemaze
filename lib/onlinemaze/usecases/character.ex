@@ -43,6 +43,14 @@ defmodule Onlinemaze.Usecases.Character do
     |> Enum.map(fn v -> GenServer.call(v, :name_and_position) end)
   end
 
+  def others_name_and_positions_and_ghosts(room_atom, me_atom, mode) do
+    room_atom
+    |> list()
+    |> Enum.reject(fn v -> v == me_atom end)
+    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
+    |> Enum.map(fn v -> GenServer.call(v, :name_and_position_and_ghost) end)
+  end
+
   def me_position(me_atom) do
     GenServer.call(me_atom, :position)
   end

@@ -100,6 +100,14 @@ defmodule Onlinemaze.Domain.Character do
     end
   end
 
+  def handle_call(
+        :name_and_position_and_ghost,
+        _,
+        character = %{x: x, y: y, name: name, ghost: ghost}
+      ) do
+    {:reply, %{x: x, y: y, name: name, ghost: ghost}, character}
+  end
+
   def handle_call(:name_and_position, _, character = %{x: x, y: y, name: name}) do
     {:reply, %{x: x, y: y, name: name}, character}
   end
