@@ -84,7 +84,7 @@ defmodule OnlinemazeWeb.TreasureLive do
 
   def update_others(socket = %{assigns: %{room_atom: room_atom, me_atom: me_atom}}) do
     socket
-    |> assign(others: Character.others_name_and_positions(room_atom, me_atom))
+    |> assign(others: Character.others_name_and_positions(room_atom, me_atom, "game"))
   end
 
   def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do
@@ -92,8 +92,8 @@ defmodule OnlinemazeWeb.TreasureLive do
     |> assign(walls: Game.list_walls(wall_atom))
   end
 
-  def check_finish(socket = %{assigns: %{me_atom: me_atom, room_name: room_name}}) do
-    if Game.check_clear(me_atom, room_name),
+  def check_finish(socket = %{assigns: %{room_name: room_name}}) do
+    if Game.check_treasure_clear(room_name),
       do: socket |> put_flash(:info, "ゲームクリア"),
       else: socket |> put_flash(:info, "壁を書いて宝まで導け")
   end

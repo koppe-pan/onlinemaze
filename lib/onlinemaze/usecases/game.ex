@@ -20,12 +20,12 @@ defmodule Onlinemaze.Usecases.Game do
     |> Enum.any?(fn {_, v, _, _} -> state(v).id == name end)
   end
 
-  def check_clear(me_atom, room_name) do
+  def check_treasure_clear(room_name) do
     treasure_position = treasure_position(Treasure.generate_id(room_name))
 
     room_name
     |> String.to_atom()
-    |> Character.others_positions(me_atom)
+    |> Character.others_positions("", "game")
     |> Enum.all?(fn v ->
       Treasure.find_treasure?(v, treasure_position)
     end)

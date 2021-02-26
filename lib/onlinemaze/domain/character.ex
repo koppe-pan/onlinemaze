@@ -9,7 +9,8 @@ defmodule Onlinemaze.Domain.Character do
             y: 0,
             random: nil,
             name: nil,
-            room_name: nil
+            room_name: nil,
+            mode: "room"
 
   alias Onlinemaze.Domain.Calc
 
@@ -41,6 +42,10 @@ defmodule Onlinemaze.Domain.Character do
 
   def generate_id(room_name, name) do
     String.to_atom(room_name <> name)
+  end
+
+  def handle_cast({:change_mode, mode}, character) do
+    {:noreply, character |> Map.replace!(:mode, mode)}
   end
 
   def handle_cast({:set_home_position, %{x: x, y: y}}, character) do
@@ -109,5 +114,9 @@ defmodule Onlinemaze.Domain.Character do
 
   def handle_call(:velocity, _, character = %{v: v}) do
     {:reply, v, character}
+  end
+
+  def handle_call(:mode, _, character = %{mode: mode}) do
+    {:reply, mode, character}
   end
 end

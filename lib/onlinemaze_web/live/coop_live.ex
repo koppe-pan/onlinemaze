@@ -6,6 +6,7 @@ defmodule OnlinemazeWeb.CoopLive do
   @impl true
   def mount(_params, %{"me" => me, "room_name" => room_name} = _session, socket) do
     me_atom = Character.generate_id(room_name, me)
+    Character.change_mode(me_atom, "coop")
 
     {:ok,
      socket

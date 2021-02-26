@@ -5,6 +5,9 @@ defmodule OnlinemazeWeb.RoomLive do
 
   @impl true
   def mount(_params, %{"me" => me, "room_name" => name} = _session, socket) do
+    me_atom = Character.generate_id(name, me)
+    Character.change_mode(me_atom, "room")
+
     {:ok,
      socket
      |> assign(room_name: name)

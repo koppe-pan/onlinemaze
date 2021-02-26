@@ -81,7 +81,11 @@ defmodule OnlinemazeWeb.PageController do
   end
 
   def redirect_to_treasure(conn, %{"me" => me, "room_name" => room_name}) do
-    if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
+    me_pid = Character.generate_id(room_name, me)
+
+    if(Character.check_name(String.to_atom(room_name), me_pid)) do
+      Character.change_mode(me_pid, "treasure")
+
       conn
       |> live_render(OnlinemazeWeb.TreasureLive,
         session: %{"me" => me, "room_name" => room_name}

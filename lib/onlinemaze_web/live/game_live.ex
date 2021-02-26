@@ -6,6 +6,7 @@ defmodule OnlinemazeWeb.GameLive do
   @impl true
   def mount(_params, %{"me" => me, "room_name" => room_name} = _session, socket) do
     me_atom = Character.generate_id(room_name, me)
+    Character.change_mode(me_atom, "game")
 
     {:ok,
      socket
@@ -99,12 +100,18 @@ defmodule OnlinemazeWeb.GameLive do
 
   def update_others(socket = %{assigns: %{room_atom: room_atom, me_atom: me_atom}}) do
     socket
-    |> assign(others: Character.others_name_and_positions(room_atom, me_atom))
+    |> assign(others: Character.others_name_and_positions(room_atom, me_atom, "game"))
   end
 
   def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do
     socket
     |> assign(walls: Game.list_walls(wall_atom))
+  end
+
+  def check_finish(socket = %{assigns: %{room_name: room_name}}) do
+    if Game.check_treasure_clear(room_name),
+      do: socket |> put_flash(:info, "ゲームクリア"),
+      else: socket |> put_flash(:info, "壁をもとに宝を探せ")
   end
 
   def update(socket) do
@@ -113,6 +120,7 @@ defmodule OnlinemazeWeb.GameLive do
     |> update_me()
     |> update_others()
     |> update_walls()
+    |> check_finish()
   end
 
   @impl true
