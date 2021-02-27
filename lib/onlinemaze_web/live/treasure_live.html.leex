@@ -1,5 +1,5 @@
 <div id="canvas-container">
-  <svg phx-hook="Canvas">
+  <svg id="canvas-hook" phx-hook="Canvas">
     <%= if !is_nil(@mousestart) do %>
       <line x1="<%= @mousestart.x %>" y1="<%= @mousestart.y %>" x2="<%= @mouseend.x %>" y2="<%= @mouseend.y %>" stroke="black" />
     <% end %>

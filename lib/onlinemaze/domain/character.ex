@@ -27,14 +27,15 @@ defmodule Onlinemaze.Domain.Character do
 
   @impl true
   def init(%{ox: ox, oy: oy, name: name, room_name: room_name}) do
+    random_position = generate_random_position()
+
     {:ok,
      %__MODULE__{
        id: generate_id(room_name, name),
        o: %{x: ox * @speed, y: oy * @speed},
-       random: %{
-         x: Enum.random(-@map_in_size..@map_in_size),
-         y: Enum.random(-@map_in_size..@map_in_size)
-       },
+       random: random_position,
+       x: random_position.x,
+       y: random_position.y,
        name: name,
        room_name: room_name
      }}
@@ -44,20 +45,29 @@ defmodule Onlinemaze.Domain.Character do
     String.to_atom(room_name <> name)
   end
 
+  def generate_random_position() do
+    %{x: Enum.random(-@map_in_size..@map_in_size), y: Enum.random(-@map_in_size..@map_in_size)}
+  end
+
+  @impl true
   def handle_cast({:change_mode, mode}, character) do
     {:noreply, character |> Map.replace!(:mode, mode)}
   end
 
+  @impl true
   def handle_cast({:set_home_position, %{x: x, y: y}}, character) do
+    random_position = generate_random_position()
+
     {:noreply,
      character
      |> Map.replace!(:o, %{x: x * @speed, y: y * @speed})
-     |> Map.replace!(:random, %{
-       x: Enum.random(-@map_in_size..@map_in_size),
-       y: Enum.random(-@map_in_size..@map_in_size)
-     })}
+     |> Map.replace!(:random, random_position)
+     |> Map.replace!(:ghost, nil)
+     |> Map.replace!(:x, random_position.x)
+     |> Map.replace!(:y, random_position.y)}
   end
 
+  @impl true
   def handle_cast(
         {:move_to, %{x: x, y: y}},
         character = %{
@@ -100,6 +110,7 @@ defmodule Onlinemaze.Domain.Character do
     end
   end
 
+  @impl true
   def handle_call(
         :name_and_position_and_ghost,
         _,
@@ -108,22 +119,27 @@ defmodule Onlinemaze.Domain.Character do
     {:reply, %{x: x, y: y, name: name, ghost: ghost}, character}
   end
 
+  @impl true
   def handle_call(:name_and_position, _, character = %{x: x, y: y, name: name}) do
     {:reply, %{x: x, y: y, name: name}, character}
   end
 
+  @impl true
   def handle_call(:position, _, character = %{x: x, y: y}) do
     {:reply, %{x: x, y: y}, character}
   end
 
+  @impl true
   def handle_call(:ghost_position, _, character = %{ghost: ghost}) do
     {:reply, ghost, character}
   end
 
+  @impl true
   def handle_call(:velocity, _, character = %{v: v}) do
     {:reply, v, character}
   end
 
+  @impl true
   def handle_call(:mode, _, character = %{mode: mode}) do
     {:reply, mode, character}
   end

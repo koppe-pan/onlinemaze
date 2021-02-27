@@ -1,7 +1,7 @@
 defmodule OnlinemazeWeb.RoomLive do
   use OnlinemazeWeb, :live_view
 
-  alias Onlinemaze.Usecases.Character
+  alias Onlinemaze.Usecases.{Character, Game}
 
   @impl true
   def mount(_params, %{"me" => me, "room_name" => name} = _session, socket) do
@@ -26,6 +26,17 @@ defmodule OnlinemazeWeb.RoomLive do
      |> assign(characters: [])
      |> assign(me: nil)
      |> schedule_tick()}
+  end
+
+  @impl true
+  def handle_event(
+        "upload",
+        %{"bytestring" => bytestring},
+        socket = %{assigns: %{room_name: room_name}}
+      ) do
+    if Game.upload_maze(room_name, bytestring),
+      do: {:noreply, socket |> put_flash(:info, "読み込みに成功しました")},
+      else: {:noreply, socket |> put_flash(:error, "読み込みに失敗しました")}
   end
 
   @impl true

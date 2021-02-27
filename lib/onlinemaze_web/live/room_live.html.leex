@@ -3,7 +3,7 @@
 <div>
   <p>登録してください</p>
   <input type="text" name="name" placeholder="名前" phx-change="check-name"/>
-  <button phx-hook="Prepare">登録</button>
+  <button id="prepare_button" phx-hook="Prepare">登録</button>
 </div>
 <% else %>
   <div id="to-room">
@@ -35,13 +35,21 @@
     </form>
   </div>
   <p>左側のメニューから遊びたいゲームを選択してください</p>
-  <button phx-hook="SetPosition">現在地をリセット</button>
 <% end %>
 <div>
   <h1>参加者一覧</h1>
   <%= for c <- @characters do %>
     <p><%= c.name %></p>
   <% end %>
+</div>
+<div>
+  <button id="set-position-hook" phx-hook="SetPosition">現在地をリセット</button>
+  <form phx-submit="upload">
+    <label>迷路をアップロードする</label>
+    <input type="file" id="upload_file" name="file" placeholder="file" required autofocus>
+    <input type="hidden" id="upload_bytestring" name="bytestring" required>
+    <button type="submit">クリックしてアップロード</button>
+  </form>
 </div>
 <style>
 #canvas-container {

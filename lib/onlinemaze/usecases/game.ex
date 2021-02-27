@@ -58,6 +58,28 @@ defmodule Onlinemaze.Usecases.Game do
     GenServer.cast(pid, {:add, wall})
   end
 
+  def reset_walls(pid) do
+    GenServer.cast(pid, :reset)
+  end
+
+  def upload_maze(room_name, bytestring) do
+    pid = Wall.generate_id(room_name)
+    reset_walls(pid)
+
+    bytestring
+    |> String.split()
+    |> Task.async_stream(fn v ->
+      add_wall(
+        pid,
+        v
+        |> String.split(",")
+        |> Enum.map(fn v -> String.to_integer(v) end)
+        |> List.to_tuple()
+      )
+    end)
+    |> Enum.all?(fn {:ok, _} -> true end)
+  end
+
   def list_walls(pid) do
     GenServer.call(pid, :list)
   end

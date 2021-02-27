@@ -7,20 +7,31 @@ defmodule Onlinemaze.Domain.Wall do
 
   @map_size 200
 
+  @initial [
+    {%{x: -@map_size, y: -@map_size}, %{x: -@map_size, y: @map_size}},
+    {%{x: -@map_size, y: -@map_size}, %{x: @map_size, y: -@map_size}},
+    {%{x: -@map_size, y: @map_size}, %{x: @map_size, y: @map_size}},
+    {%{x: @map_size, y: -@map_size}, %{x: @map_size, y: @map_size}}
+  ]
+
   @impl true
   def init(_) do
-    {:ok,
-     [
-       {%{x: -@map_size, y: -@map_size}, %{x: -@map_size, y: @map_size}},
-       {%{x: -@map_size, y: -@map_size}, %{x: @map_size, y: -@map_size}},
-       {%{x: -@map_size, y: @map_size}, %{x: @map_size, y: @map_size}},
-       {%{x: @map_size, y: -@map_size}, %{x: @map_size, y: @map_size}}
-     ]}
+    {:ok, @initial}
   end
 
   @impl true
   def handle_cast({:add, wall = {%{x: _, y: _}, %{x: _, y: _}}}, walls) do
     {:noreply, [wall | walls]}
+  end
+
+  @impl true
+  def handle_cast({:add, {a, b, c, d}}, walls) do
+    {:noreply, [{%{x: a, y: b}, %{x: c, y: d}} | walls]}
+  end
+
+  @impl true
+  def handle_cast(:reset, walls) do
+    {:noreply, @initial}
   end
 
   @impl true
