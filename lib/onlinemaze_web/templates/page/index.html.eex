@@ -6,7 +6,7 @@
   </form>
 </div>
 <div>
-  <%= form_tag("/play", method: :post) %>
+  <%= form_tag("/play", method: :get) %>
   <label>ルーム名を入力して始める</label>
   <input type="text" name="room_name" placeholder="ルーム名" required>
   <button type="submit">ルームに入る</button>
