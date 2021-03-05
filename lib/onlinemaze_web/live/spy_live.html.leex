@@ -1,0 +1,48 @@
+<div id="clock" value="<%= @time %>" phx-hook="Spy"></div>
+<div id="canvas-container">
+  <svg>
+    <g transform='translate(<%= @width %>, <%= @height %>)' >
+      <circle cx="<%= @me.x %>" cy="<%= @me.y %>" r="3" stroke="black" stroke-width="1" fill="magenta"></circle>
+      <text x="<%= @me.x %>" y="<%= (@me.y) -10 %>"><%= @name %></text>
+      <%= for other <- @others do %>
+        <circle cx="<%= other.x %>" cy="<%= other.y %>" r="3" stroke="black" stroke-width="1" fill="green"></circle>
+        <text x="<%= other.x %>" y="<%= (other.y) -10 %>"><%= other.name %></text>
+      <% end %>
+      <%= for {st, en} <- @walls do %>
+        <line x1="<%= st.x %>" y1="<%= st.y %>" x2="<%= en.x %>" y2="<%= en.y %>" stroke="black" />
+      <% end %>
+      <%= if !is_nil(@ghost) do %>
+        <circle cx="<%= @ghost.x %>" cy="<%= @ghost.y %>" r="3" stroke="black" stroke-width="1" fill="magenta" fill-opacity="0.3"></circle>
+      <% end %>
+    </g>
+  </svg>
+</div>
+<div>
+  <div id="to-room">
+    <%= form_tag("/redirect_to_room", method: :get) %>
+      <input type="hidden" name="me" value="<%= @name %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit">選択画面に戻る</button>
+    </form>
+  </div>
+<style>
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#canvas-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#to-room {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+</style>

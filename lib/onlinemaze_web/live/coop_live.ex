@@ -5,14 +5,11 @@ defmodule OnlinemazeWeb.CoopLive do
 
   @impl true
   def mount(_params, %{"me" => me, "room_name" => room_name} = _session, socket) do
-    me_atom = Character.generate_id(room_name, me)
-    Character.change_mode(me_atom, "coop")
-
     {:ok,
      socket
      |> assign(room_name: room_name)
      |> assign(room_atom: String.to_atom(room_name))
-     |> assign(me_atom: me_atom)
+     |> assign(me_atom: Character.generate_id(room_name, me))
      |> assign(character: %{x: 0, y: 0})
      |> assign(ghost: nil)
      |> assign(time: 0)

@@ -1,3 +1,4 @@
+<div id="Lobby" phx-hook="Lobby"></div>
 <p>ルーム名：<%= @room_name %></p>
 <%= if is_nil(@me) do %>
 <div>
@@ -32,6 +33,13 @@
       <input type="hidden" name="me" value="<%= @me %>">
       <input type="hidden" name="room_name" value="<%= @room_name %>">
       <button type="submit"><%= @me %>でスイカモードを開始する</button>
+    </form>
+  </div>
+  <div id="to-spy">
+    <%= form_tag("/redirect_to_lobby_for_spy", method: :get) %>
+      <input type="hidden" name="me" value="<%= @me %>">
+      <input type="hidden" name="room_name" value="<%= @room_name %>">
+      <button type="submit"><%= @me %>でスパイモードを開始する</button>
     </form>
   </div>
   <p>左側のメニューから遊びたいゲームを選択してください</p>
@@ -89,6 +97,13 @@
 #to-treasure {
   position: fixed;
   top: 15%;
+  left: 0;
+  width: 30%;
+  height: 10%;
+}
+#to-spy {
+  position: fixed;
+  top: 20%;
   left: 0;
   width: 30%;
   height: 10%;

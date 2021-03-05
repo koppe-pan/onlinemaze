@@ -1,6 +1,6 @@
 defmodule Onlinemaze.Domain.Room do
   use GenServer
-  alias Onlinemaze.Domain.{Calc, Character}
+  alias Onlinemaze.Domain.{Calc, Character, Mode}
 
   defstruct id: nil,
             characters: [],
@@ -31,7 +31,7 @@ defmodule Onlinemaze.Domain.Room do
   def handle_cast({:register, name}, room = %{characters: characters}) do
     {:noreply,
      room
-     |> Map.replace!(:characters, [name | characters])}
+     |> Map.replace!(:characters, [name | characters] |> Enum.uniq())}
   end
 
   @impl true
@@ -52,6 +52,15 @@ defmodule Onlinemaze.Domain.Room do
          |> Map.replace!(:coop, to)}
       end
     end
+  end
+
+  @impl true
+  def handle_call(
+        {:check_mode_available, %{me_atom: me_atom, mode: mode}},
+        _,
+        room = %{characters: characters}
+      ) do
+    {:reply, Mode.check(characters |> Enum.reject(fn v -> v == me_atom end), mode), room}
   end
 
   @impl true

@@ -42,58 +42,91 @@ defmodule OnlinemazeWeb.PageController do
   end
 
   def redirect_to_room(conn, %{"me" => me, "room_name" => room_name}) do
-    if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
-      conn
-      |> live_render(OnlinemazeWeb.RoomLive,
-        session: %{"me" => me, "room_name" => room_name}
-      )
-    else
-      conn
-      |> put_flash("error", "存在しないルーム名またはキャラクター名です。")
-      |> render("index.html")
-    end
+    Character.change_mode(Character.generate_id(room_name, me), "room")
+
+    conn
+    |> live_render(OnlinemazeWeb.RoomLive,
+      session: %{"me" => me, "room_name" => room_name}
+    )
   end
 
   def redirect_to_coop(conn, %{"me" => me, "room_name" => room_name}) do
-    if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
-      conn
-      |> live_render(OnlinemazeWeb.CoopLive,
-        session: %{"me" => me, "room_name" => room_name}
-      )
-    else
-      conn
-      |> put_flash("error", "存在しないルーム名またはキャラクター名です。")
-      |> render("index.html")
+    case Character.change_mode(Character.generate_id(room_name, me), "coop") do
+      "coop" ->
+        conn
+        |> live_render(OnlinemazeWeb.CoopLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+
+      _ ->
+        conn
+        |> live_render(OnlinemazeWeb.RoomLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
     end
   end
 
   def redirect_to_game(conn, %{"me" => me, "room_name" => room_name}) do
-    if(Character.check_name(String.to_atom(room_name), Character.generate_id(room_name, me))) do
-      conn
-      |> live_render(OnlinemazeWeb.GameLive,
-        session: %{"me" => me, "room_name" => room_name}
-      )
-    else
-      conn
-      |> put_flash("error", "存在しないルーム名またはキャラクター名です。")
-      |> render("index.html")
+    case Character.change_mode(Character.generate_id(room_name, me), "game") do
+      "game" ->
+        conn
+        |> live_render(OnlinemazeWeb.GameLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+
+      _ ->
+        conn
+        |> live_render(OnlinemazeWeb.RoomLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+    end
+  end
+
+  def redirect_to_lobby_for_spy(conn, %{"me" => me, "room_name" => room_name}) do
+    case Character.change_mode(Character.generate_id(room_name, me), "lobby_for_spy") do
+      "lobby_for_spy" ->
+        conn
+        |> live_render(OnlinemazeWeb.LobbyForSpyLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+
+      _ ->
+        conn
+        |> live_render(OnlinemazeWeb.RoomLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+    end
+  end
+
+  def redirect_to_spy(conn, %{"me" => me, "room_name" => room_name}) do
+    case Character.mode(Character.generate_id(room_name, me)) do
+      "spy" ->
+        conn
+        |> live_render(OnlinemazeWeb.SpyLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
+
+      _ ->
+        conn
+        |> live_render(OnlinemazeWeb.RoomLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
     end
   end
 
   def redirect_to_treasure(conn, %{"me" => me, "room_name" => room_name}) do
-    me_pid = Character.generate_id(room_name, me)
+    case Character.change_mode(Character.generate_id(room_name, me), "treasure") do
+      "treasure" ->
+        conn
+        |> live_render(OnlinemazeWeb.TreasureLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
 
-    if(Character.check_name(String.to_atom(room_name), me_pid)) do
-      Character.change_mode(me_pid, "treasure")
-
-      conn
-      |> live_render(OnlinemazeWeb.TreasureLive,
-        session: %{"me" => me, "room_name" => room_name}
-      )
-    else
-      conn
-      |> put_flash("error", "存在しないルーム名またはキャラクター名です。")
-      |> render("index.html")
+      _ ->
+        conn
+        |> live_render(OnlinemazeWeb.RoomLive,
+          session: %{"me" => me, "room_name" => room_name}
+        )
     end
   end
 

@@ -1,4 +1,4 @@
-defmodule OnlinemazeWeb.GameLive do
+defmodule OnlinemazeWeb.SpyLive do
   use OnlinemazeWeb, :live_view
 
   alias Onlinemaze.Usecases.{Character, Game}
@@ -17,10 +17,8 @@ defmodule OnlinemazeWeb.GameLive do
      |> assign(time: 0)
      |> assign(width: 320)
      |> assign(height: 320)
-     |> assign(mousestart: nil)
-     |> assign(mouseend: nil)
-     |> assign(wall_atom: String.to_atom("wall" <> room_name))
-     |> assign(walls: [])
+     |> assign(walls: Game.list_walls(String.to_atom("wall" <> room_name)))
+     |> push_event("set-audio-media", %{})
      |> schedule_tick()}
   end
 
@@ -41,47 +39,13 @@ defmodule OnlinemazeWeb.GameLive do
 
   @impl true
   def handle_event(
-        "touchstart",
-        %{"x" => x, "y" => y},
-        socket
+        "put-stream",
+        %{"stream" => stream},
+        socket = %{assigns: %{me_atom: me_atom}}
       ) do
-    {:noreply,
-     socket
-     |> assign(mousestart: %{x: x, y: y})
-     |> assign(mouseend: %{x: x, y: y})}
-  end
+    Character.update_stream(me_atom, stream)
 
-  @impl true
-  def handle_event(
-        "touchmove",
-        %{"x" => x, "y" => y},
-        socket
-      ) do
-    {:noreply,
-     socket
-     |> assign(mouseend: %{x: x, y: y})}
-  end
-
-  @impl true
-  def handle_event(
-        "touchend",
-        _,
-        socket = %{
-          assigns: %{
-            wall_atom: wall_atom,
-            mousestart: %{x: sx, y: sy},
-            mouseend: %{x: ex, y: ey},
-            width: w,
-            height: h
-          }
-        }
-      ) do
-    Game.add_wall(wall_atom, {%{x: sx - w, y: sy - h}, %{x: ex - w, y: ey - h}})
-
-    {:noreply,
-     socket
-     |> assign(mousestart: nil)
-     |> assign(mouseend: nil)}
+    {:noreply, socket}
   end
 
   def update_time(socket = %{assigns: %{time: time}}) do
@@ -100,11 +64,6 @@ defmodule OnlinemazeWeb.GameLive do
     |> assign(others: Game.others_name_and_positions(room_atom, me_atom, "game"))
   end
 
-  def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do
-    socket
-    |> assign(walls: Game.list_walls(wall_atom))
-  end
-
   def check_finish(socket = %{assigns: %{room_name: room_name, me_atom: me_atom}}) do
     if Game.check_treasure_clear(room_name) do
       socket |> put_flash(:info, "ゲームクリア")
@@ -115,13 +74,21 @@ defmodule OnlinemazeWeb.GameLive do
     end
   end
 
+  def update_stream(socket = %{assigns: %{me_atom: me_atom}}) do
+    if is_nil(Character.stream(me_atom)),
+      do: socket,
+      else:
+        socket
+        |> push_event("pushStream", %{stream: Character.stream(me_atom)})
+  end
+
   def update(socket) do
     socket
     |> update_time()
     |> update_me()
     |> update_others()
-    |> update_walls()
     |> check_finish()
+    |> update_stream()
   end
 
   @impl true
@@ -133,7 +100,7 @@ defmodule OnlinemazeWeb.GameLive do
   end
 
   defp schedule_tick(socket) do
-    Process.send_after(self(), :tick, 100)
+    Process.send_after(self(), :tick, 10)
     socket
   end
 end

@@ -18,39 +18,6 @@ defmodule Onlinemaze.Usecases.Character do
     :sys.get_state(pid)
   end
 
-  def list(supervisor) do
-    Room.list(supervisor)
-  end
-
-  def list_state(supervisor) do
-    Room.list(supervisor)
-    |> Enum.map(fn v -> state(v) end)
-  end
-
-  def others_positions(room_atom, me_atom, mode) do
-    room_atom
-    |> list()
-    |> Enum.reject(fn v -> v == me_atom end)
-    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
-    |> Enum.map(fn v -> GenServer.call(v, :position) end)
-  end
-
-  def others_name_and_positions(room_atom, me_atom, mode) do
-    room_atom
-    |> list()
-    |> Enum.reject(fn v -> v == me_atom end)
-    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
-    |> Enum.map(fn v -> GenServer.call(v, :name_and_position) end)
-  end
-
-  def others_name_and_positions_and_ghosts(room_atom, me_atom, mode) do
-    room_atom
-    |> list()
-    |> Enum.reject(fn v -> v == me_atom end)
-    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
-    |> Enum.map(fn v -> GenServer.call(v, :name_and_position_and_ghost) end)
-  end
-
   def me_position(me_atom) do
     GenServer.call(me_atom, :position)
   end
@@ -63,6 +30,14 @@ defmodule Onlinemaze.Usecases.Character do
     GenServer.call(me_atom, :velocity)
   end
 
+  def stream(me_atom) do
+    GenServer.call(me_atom, :stream)
+  end
+
+  def mode(me_atom) do
+    GenServer.call(me_atom, :mode)
+  end
+
   def set_home_position(me_atom, attrs) do
     GenServer.cast(me_atom, {:set_home_position, attrs})
   end
@@ -71,8 +46,12 @@ defmodule Onlinemaze.Usecases.Character do
     GenServer.cast(me_atom, {:move_to, attrs})
   end
 
+  def update_stream(me_atom, stream) do
+    GenServer.cast(me_atom, {:update_stream, stream})
+  end
+
   def change_mode(me_atom, mode) do
-    GenServer.cast(me_atom, {:change_mode, mode})
+    GenServer.call(me_atom, {:change_mode, mode})
   end
 
   def generate_id(room_name, name) do

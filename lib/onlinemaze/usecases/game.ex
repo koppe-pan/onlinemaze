@@ -1,5 +1,5 @@
 defmodule Onlinemaze.Usecases.Game do
-  alias Onlinemaze.Domain.{GameSupervisor, Treasure, Wall}
+  alias Onlinemaze.Domain.{GameSupervisor, Room, Treasure, Wall}
   alias Onlinemaze.Usecases.Character
 
   def create_game(name) do
@@ -25,7 +25,7 @@ defmodule Onlinemaze.Usecases.Game do
 
     room_name
     |> String.to_atom()
-    |> Character.others_positions("", "game")
+    |> others_positions("", "game")
     |> Enum.all?(fn v ->
       Treasure.find_treasure?(v, treasure_position)
     end)
@@ -82,5 +82,53 @@ defmodule Onlinemaze.Usecases.Game do
 
   def list_walls(pid) do
     GenServer.call(pid, :list)
+  end
+
+  def list_character(supervisor) do
+    Room.list(supervisor)
+  end
+
+  def list_character_state(supervisor) do
+    Room.list(supervisor)
+    |> Enum.map(fn v -> state(v) end)
+  end
+
+  def list_character_by_mode(room_atom, mode) do
+    room_atom
+    |> list_character()
+    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
+  end
+
+  def list_character_state_by_mode(room_atom, mode) do
+    room_atom
+    |> list_character()
+    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
+    |> Enum.map(fn v -> state(v) end)
+  end
+
+  def others(room_atom, me_atom, mode) do
+    room_atom
+    |> list_character()
+    |> Enum.reject(fn v -> v == me_atom end)
+    |> Enum.filter(fn v -> GenServer.call(v, :mode) == mode end)
+  end
+
+  def others_positions(room_atom, me_atom, mode) do
+    others(room_atom, me_atom, mode)
+    |> Enum.map(fn v -> GenServer.call(v, :position) end)
+  end
+
+  def others_name_and_positions(room_atom, me_atom, mode) do
+    others(room_atom, me_atom, mode)
+    |> Enum.map(fn v -> GenServer.call(v, :name_and_position) end)
+  end
+
+  def others_name_and_positions_and_ghosts(room_atom, me_atom, mode) do
+    others(room_atom, me_atom, mode)
+    |> Enum.map(fn v -> GenServer.call(v, :name_and_position_and_ghost) end)
+  end
+
+  def check_mode_available(%{room_atom: room_atom, me_atom: me_atom, mode: mode}) do
+    GenServer.call(room_atom, {:check_mode_available, %{me_atom: me_atom, mode: mode}})
   end
 end

@@ -5,14 +5,12 @@ defmodule OnlinemazeWeb.TreasureLive do
 
   @impl true
   def mount(_params, %{"me" => me, "room_name" => room_name} = _session, socket) do
-    me_atom = Character.generate_id(room_name, me)
-
     {:ok,
      socket
      |> assign(room_name: room_name)
      |> assign(room_atom: String.to_atom(room_name))
      |> assign(name: me)
-     |> assign(me_atom: me_atom)
+     |> assign(me_atom: Character.generate_id(room_name, me))
      |> assign(others: [])
      |> assign(width: 320)
      |> assign(height: 320)
@@ -84,7 +82,7 @@ defmodule OnlinemazeWeb.TreasureLive do
 
   def update_others(socket = %{assigns: %{room_atom: room_atom, me_atom: me_atom}}) do
     socket
-    |> assign(others: Character.others_name_and_positions_and_ghosts(room_atom, me_atom, "game"))
+    |> assign(others: Game.others_name_and_positions_and_ghosts(room_atom, me_atom, "game"))
   end
 
   def update_walls(socket = %{assigns: %{wall_atom: wall_atom}}) do
@@ -96,7 +94,7 @@ defmodule OnlinemazeWeb.TreasureLive do
         socket = %{assigns: %{room_name: room_name, room_atom: room_atom, me_atom: me_atom}}
       ) do
     if Game.check_treasure_clear(room_name) do
-      if Enum.empty?(Character.others_positions(room_atom, me_atom, "game")),
+      if Enum.empty?(Game.others_positions(room_atom, me_atom, "game")),
         do: socket |> put_flash(:info, "壁を描いて迷路を作れ"),
         else: socket |> put_flash(:info, "ゲームクリア")
     else

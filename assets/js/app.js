@@ -3,6 +3,7 @@
 // its own CSS file.
 import "../css/app.scss"
 import "./uploader.js"
+import {ctx, playAudioStream} from "./audio.js"
 
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
@@ -38,7 +39,6 @@ const options = {
   timeout: 5000, //取得タイムアウトまでの時間（ミリ秒）
   maximumAge: 0 //常に新しい情報に更新
 };
-
 
 let Hooks = {}
 Hooks.Prepare = {
@@ -90,6 +90,84 @@ Hooks.Canvas = {
     this.el.addEventListener(TOUCHEND, e => {
       this.pushEvent("touchend", {})
     });
+  }
+}
+
+Hooks.Lobby = {
+  mounted(){
+    var successCallback = (stream) => {
+      var input = ctx.createMediaStreamSource(stream)
+      var processor = ctx.createScriptProcessor(512, 1, 1);
+
+      input.connect(processor);
+      processor.connect(ctx.destination);
+
+      processor.onaudioprocess = (e) => {
+        var voice = e.inputBuffer.getChannelData(0);
+        const stream = [...Array(512).keys()].map(i => voice[i])
+        this.pushEvent("put-stream", {stream: stream})
+      }
+    };
+    this.handleEvent("pushStream", ({stream: stream}) => {
+        playAudioStream(stream) 
+      }, false);
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+    .then(successCallback)
+  }
+}
+
+Hooks.LobbyForSpy = {
+  mounted(){
+    var successCallback = (stream) => {
+      var input = ctx.createMediaStreamSource(stream)
+      var processor = ctx.createScriptProcessor(512, 1, 1);
+
+      input.connect(processor);
+      processor.connect(ctx.destination);
+
+      processor.onaudioprocess = (e) => {
+        var voice = e.inputBuffer.getChannelData(0);
+        const stream = [...Array(512).keys()].map(i => voice[i])
+        this.pushEvent("put-stream", {stream: stream})
+      }
+    };
+    this.handleEvent("pushStream", ({stream: stream}) => {
+        playAudioStream(stream) 
+      }, false);
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+    .then(successCallback)
+  }
+}
+
+Hooks.Spy = {
+  mounted(){
+    var successCallback = (stream) => {
+      var input = ctx.createMediaStreamSource(stream)
+      var processor = ctx.createScriptProcessor(512, 1, 1);
+
+      input.connect(processor);
+      processor.connect(ctx.destination);
+
+      processor.onaudioprocess = (e) => {
+        var voice = e.inputBuffer.getChannelData(0);
+        const stream = [...Array(512).keys()].map(i => voice[i])
+        this.pushEvent("put-stream", {stream: stream})
+      }
+    };
+    this.pushEvent("set-window", {win: {x: window.innerWidth, y: window.innerHeight}});
+    this.handleEvent("pushStream", ({stream: stream}) => {
+        playAudioStream(stream) 
+      }, false);
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+    .then(successCallback)
+  },
+  updated(){
+    /***** ユーザーの現在の位置情報を取得 *****/
+    var successCallback = (position) => {
+        if(!isNaN(position.coords.latitude)&& !isNaN(position.coords.longitude))
+      this.pushEvent("put-location", {loc: {x: position.coords.latitude, y: position.coords.longitude}});
+    }
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
   }
 }
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

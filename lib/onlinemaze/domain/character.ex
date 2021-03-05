@@ -10,6 +10,7 @@ defmodule Onlinemaze.Domain.Character do
             random: nil,
             name: nil,
             room_name: nil,
+            stream: nil,
             mode: "room"
 
   alias Onlinemaze.Domain.Calc
@@ -50,8 +51,10 @@ defmodule Onlinemaze.Domain.Character do
   end
 
   @impl true
-  def handle_cast({:change_mode, mode}, character) do
-    {:noreply, character |> Map.replace!(:mode, mode)}
+  def handle_cast({:update_stream, stream}, character) do
+    {:noreply,
+     character
+     |> Map.replace!(:stream, stream)}
   end
 
   @impl true
@@ -142,5 +145,22 @@ defmodule Onlinemaze.Domain.Character do
   @impl true
   def handle_call(:mode, _, character = %{mode: mode}) do
     {:reply, mode, character}
+  end
+
+  @impl true
+  def handle_call({:change_mode, mode}, _, character = %{id: id, room_name: room_name}) do
+    if GenServer.call(
+         String.to_atom(room_name),
+         {:check_mode_available, %{me_atom: id, mode: mode}}
+       ) do
+      {:reply, mode, character |> Map.replace!(:mode, mode)}
+    else
+      {:reply, nil, character}
+    end
+  end
+
+  @impl true
+  def handle_call(:stream, _, character = %{stream: stream}) do
+    {:reply, stream, character}
   end
 end

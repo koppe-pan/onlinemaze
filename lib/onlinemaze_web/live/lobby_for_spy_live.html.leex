@@ -1,0 +1,10 @@
+<div id="LobbyForSpy" phx-hook="LobbyForSpy"></div>
+<%= if @prepared  do%>
+  <h1><%= @name %>さんの役職は<%= @job %>です</h1>
+  <button phx-click="me-prepared">準備完了</button>
+<% else %>
+  <h1>参加者一覧</h1>
+  <%= for c <- @characters do %>
+    <p><%= c.name %></p>
+  <% end %>
+<% end %>
